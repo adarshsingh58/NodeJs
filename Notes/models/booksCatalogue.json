@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Monk who sold his ferarri",
+    "publisher": "Limit Co.",
+    "genre": [
+      "Motivational"
+    ]
+  },
+  {
+    "name": "Shiv Purana",
+    "publisher": "Om Publishers",
+    "genre": [
+      "Spritual",
+      "Historical"
+    ]
+  },
+  {
+    "name": "Ear Pray Love",
+    "publisher": "Wanders Publications",
+    "genre": [
+      "Travel",
+      "Love"
+    ]
+  },
+  {
+    "name": "Katai",
+    "publisher": "Limit Co.",
+    "genre": [
+      "IDK"
+    ]
+  }
+]

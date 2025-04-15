@@ -1,15 +1,8 @@
 const express = require('express')
 const router = express.Router();
-const handleNewUser = require('../controllers/registerUser')
-
-
-router.post("/ex",(req,res)=> {
-
-    res.status('500').json({"message":req.body});
-});
-
+const registerUser = require('../controllers/registerUser')
 
 router.route('/')
-    .post(handleNewUser);
+    .post(registerUser);
 
 module.exports = router;

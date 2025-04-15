@@ -5,7 +5,7 @@ const router = express.Router();
 const cookieparser = require('cookie-parser');
 const notesRouter = require("./routes/notes.js");
 const testRouter = require("./routes/testrouter.js");
-const empRouter = require("./routes/employee.js");
+const booksCatalogueRouter = require("./routes/booksCatalogueRouter");
 const registerRouter = require("./routes/registerRoute.js");
 const loginRouter = require("./routes/loginAuthRoute.js");
 const refreshRouter = require("./routes/***REMOVED***Route.js");
@@ -34,13 +34,13 @@ app.use("/notes", notesRouter);// Routing all /notes request to notesRouter
 app.use("/", testRouter);// Routing all / request to testRouter
 
 //Logging in, Registering and Refreshing Access Token must come before verifyJWT, because we dont have/need an access token here.
+app.use("/register", registerRouter);// Routing all /register to registerRouter. Registers a User.
 app.use("/login", loginRouter);// Routing all /login to loginRouter. First time logging this is called and ***REMOVED*** and ***REMOVED*** is generated and passed in response.
 app.use("/refresh", refreshRouter);// Routing all /refresh to refreshRouter. This is called when a new access token is needed with a valid refresh token
-app.use("/register", registerRouter);// Routing all /register to registerRouter. Registers a User.
 
 //Any operation that needs authentication and authorization must come after verifyJWT
 app.use(verifyJWT);// JWT access token verification
-app.use("/employees", empRouter);// Routing all /employees to empRouter. This call must be accessed only if jwt ***REMOVED*** is valid
+app.use("/books", booksCatalogueRouter);// Routing all /employees to empRouter. This call must be accessed only if jwt ***REMOVED*** is valid
 app.use("/logout", logoutRouter);// Routing all /logout to logoutRouter. This call must be accessed only if jwt ***REMOVED*** is valid
 
 module.exports = router;

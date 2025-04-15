@@ -12,6 +12,7 @@ function filterRequests(req, res, next) {
 
 function logDetails(req, res, next) {
     console.log("req coming from " + req.originalUrl);
+    console.log("req method Type " + req.method);
     next();
 }
 
@@ -38,8 +39,10 @@ function verifyJWT(req, res, next) {
         token,
         process.env.ACCESS_TOKEN_SECRET,
         (err, decode) => {
-            if (err)
-                return res.sendStatus(403);
+            if (err) {
+                console.log(`Access Token Invalid`);
+                return res.status(403).json({"message": err.message});
+            }
             req.username = decode.username;
             req.roles = decode.roles;
             next()
@@ -54,7 +57,8 @@ const authorizationWithRoles = (...allowedRoles) => {
         if (req.roles.map(role => rolesArray.includes(role)).find(val => val === true)) {
             next();
         } else {
-            return res.sendStatus(401);
+            console.log(`User ${req.username} not Authorized for ${req.originalUrl}`);
+            return res.status(401).json({"message": `User ${req.username} not Authorized for ${req.originalUrl}`});
         }
     }
 }
