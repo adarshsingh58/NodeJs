@@ -1,0 +1,12 @@
+[
+  {
+    "username": "Aditi",
+    "password": "$2b$10$11wQHo4OjzLdjU2WTGZe7.h9YDBSUfhSsR5pmDU9p.3svsvZAoXiW",
+    "roles": ["Editor"]
+  },
+  {
+    "username": "Jaggu",
+    "password": "$2b$10$11wQHo4OjzLdjU2WTGZe7.h9YDBSUfhSsR5pmDU9p.3svsvZAoXiW",
+    "roles": ["StandardUser"]
+  }
+]
