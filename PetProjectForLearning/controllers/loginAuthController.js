@@ -21,7 +21,7 @@ const authenticateUser = async (req, res) => {
     const match = await bcrypt.compare(password, foundUser.password);
     if (match) {
         console.log(`Credentials for user: ${username} matched successfully`);
-        //If loggin details are matching the User then we can proceed with creating JWT Access and Refresh Tokens
+        //If login details are matching the User then we can proceed with creating JWT Access and Refresh Tokens
         const ***REMOVED*** = jwt.sign(
             {"username": foundUser.username, "roles": foundUser.roles},// This is the main payload or Claim of the Token
             process.env.ACCESS_TOKEN_SECRET,// This is the access token secret key. Right now it is hardcoded in env file, but in prod we generate it on the fly

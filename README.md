@@ -6,7 +6,10 @@ https://www.youtube.com/watch?v=lY6icfhap2o&t=391s
 https://www.youtube.com/watch?v=XlvsJLer_No&list=PLZlA0Gpn_vH8jbFkBjOuFjhxANC63OmXM
 https://www.youtube.com/watch?v=qj2oDkvc4dQ&list=PLZlA0Gpn_vH8jbFkBjOuFjhxANC63OmXM&index=5
 https://www.youtube.com/watch?v=f2EqECiTBL8&t=12520s
+
 FOR JWT: https://www.youtube.com/watch?v=favjC6EKFgw
+
+For Oauth: https://www.youtube.com/watch?v=X4mtsWfhNzw
 
 
 We have 
