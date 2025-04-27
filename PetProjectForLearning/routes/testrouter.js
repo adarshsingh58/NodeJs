@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const path = require("path");
 
-router.get("/index", (req, res) => {
-    res.render(__dirname + "/views/hello");
+router.get("/hello", (req, res) => {
+    res.render("hello");
 });
 
 router.get("/clienterror", (req, res) => {
-    res.sendStatus(400).send("Wrong Input");
+    res.status(400).send("Wrong Input");
 });
 
 module.exports = router;

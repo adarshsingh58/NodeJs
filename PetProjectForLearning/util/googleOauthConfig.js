@@ -1,4 +1,5 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy; // Corrected variable name
+const {findUserById, findOrCreateUser} = require('../models/Users'); // Import our DB functions
 /*
 * let's break down what this specific piece of code using passport.use(new GoogleStrategy(...)) does step-by-step:
 *     passport.use(...):
@@ -31,32 +32,54 @@ module.exports = function (passport) {
             "***REMOVED***": process.env.***REMOVED***,
             "***REMOVED***": process.env.GOOGLE_OAUTH_CLIENT_SECRET,
             "callbackURL": process.env.GOOGLE_OAUTH_CALLBACK // Use absolute path, ensure it matches Google Console Redirect URI
-        }, (***REMOVED***, ***REMOVED***, profile, done) => {
-            // --- User Find/Create Logic ---
-            // In a real app, you would typically find or create a user
-            // in your database here based on the profile.id or profile.emails[0].value
-            // For this example, we just pass the Google profile directly.
-            console.log("Google Strategy Callback Fired:");
-            console.log("Google Oauth Access Token:", ***REMOVED***); // Careful logging tokens
-            console.log("Google Oauth Refresh Token:", ***REMOVED***); // Careful logging tokens
-            // console.log("Google Oauth Profile Details:", profile);
-            return done(null, profile); // Pass the profile data to serializeUser
+        }, async (***REMOVED***, ***REMOVED***, profile, done) => {
+            // --- User Find/Create Logic ---    This function is called after successful Google authentication
+            // In a real app, you would typically find or create a user in your database here based on the profile.id or profile.emails[0].value For this example, we just pass the Google profile directly.
+            console.log(" Google Strategy Verify Callback Fired:");
+            console.log(" Google Oauth Access Token:", ***REMOVED*** ? "[REDACTED]" : "N/A"); // Avoid logging sensitive tokens directly
+            console.log(" Google Oauth Refresh Token:", ***REMOVED*** ? "[REDACTED]" : "N/A");
+            console.log(" Google Oauth Profile ID:", profile.id);
+            console.log(" Google Oauth Profile Name:", profile.displayName);
+
+            try {
+                // Use our function to find or create the user in the "database" (file)
+                const user = await findOrCreateUser(profile, ***REMOVED***, ***REMOVED***);
+                if (user) {// Pass the application's user object (from our file) to Passport
+                    return done(null, user); // Pass the application's user object (from our file) to Passport
+                } else {
+                    return done(null, false, {message: 'Could not find or create user.'});// Should not happen with findOrCreate, but handle defensively
+                }
+            } catch (err) {
+                console.error("Error during user find/create:", err);
+                return done(err, false); // Pass error to Passport
+            }
         }
     ));
 
-    // Determines what data from the user object should be stored in the session. Typically, just the user ID is enough.
-    passport.serializeUser((profile, done) => {
-        // In a real app, you might do `done(null, profile.id);` after finding/creating the user. Storing the whole profile can make the session cookie large.
-        console.log(`Serializing user: ${profile.displayName}  for Email: ${profile.emails[0].value}`);
-        done(null, profile); // For simplicity now, store the whole user profile object
+    // --- Session Management ---
+
+    // Determines what data from the user object should be stored in the session. Typically, just the user ID is enough. Here Stores the user's unique ID (googleId) in the session.
+    passport.serializeUser((user, done) => {
+        //you do `done(null, user.id);` after finding/creating the user. Storing the whole profile, like done(null, profile); can make the session cookie large.
+        console.log(`Serialize User: Storing googleId ${user.googleId} in session.`);
+        // Store only the unique identifier from our user object
+        done(null, user.googleId);
     });
 
-    // Retrieves the user data from the session using the key stored (e.g., user ID).
-    passport.deserializeUser((profile, done) => {
-        // In a real app, you'd use the id stored by serializeUser to find the user in your database: profile.findById(id).then(profile => done(null, profile));
-        console.log("Deserializing user:", profile.displayName || profile.id);
-        // For now, since we stored the whole object, we just pass it back.
-        done(null, profile);
-    });
 
+    // Retrieves the full user object from the "database" using the ID stored in the session
+    passport.deserializeUser(async (id, done) => {
+        console.log(`Deserialize User: Looking up user with googleId ${id}`);
+        try {
+            const user = await findUserById(id);// Use the ID (googleId) to find the user in our "database"
+            if (user) {
+                done(null, user); // Attach the full user object to req.user
+            } else {
+                done(null, false); // User not found in our DB
+            }
+        } catch (err) {
+            console.error("Error during user deserialization:", err);
+            done(err, false);
+        }
+    });
 };

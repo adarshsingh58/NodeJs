@@ -20,3 +20,10 @@ We have
 - public: all static file available to cached on browser
 - middleware: all middleware logic
 - service: we can have a service folder to move some core logic from controller to service.
+
+Ideas for application:
+- BookMyShow
+- Password Manager
+- Note taking App
+- Price tracker
+- Credit card local payment system

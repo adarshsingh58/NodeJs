@@ -1,17 +1,16 @@
-const express = require('express');
 const rateLimit = require('express-rate-limit');
 const {RateLimiterRedis} = require('rate-limiter-flexible');
 const Redis = require('redis');
 
 //THIS IS NORMAL LOCAL LATE LIMITER USING EXPRESS-RATE-LIMIT API
 
-//by default, the express-rate-limit middleware limits based on the requester's IP address.
+// by default, the express-rate-limit middleware limits based on the requester's IP address.
 // Rate Limiter: 15 requests per 15 minutes per IP
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // limit each IP to 5 requests per windowMs
-    standardHeaders: true, // return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // disable `X-RateLimit-*` headers
+    windowMs: process.env.EXPRESS_LIMITER_TIME_WINDOW_FOR_RATE_LIMIT_MILLI_SEC, // 15 minutes
+    max: process.env.EXPRESS_LIMITER_REQUEST_LIMIT_PER_TIME_WINDOW, // limit each IP to 5 requests per windowMs
+    standardHeaders: process.env.EXPRESS_LIMITER_RETURN_STD_RATE_LIMIT_HEADERS, // return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: process.env.EXPRESS_LIMITER_LEGACY_HEADERS, // disable `X-RateLimit-*` headers
     keyGenerator: (req, res) => {
         return req.user?.id || req.ip; // fall back to IP if user not authenticated
     },
@@ -30,8 +29,8 @@ const limiter = rateLimit({
 // Create Redis client
 const redisClient = Redis.createClient({
     socket: {
-        host: '127.0.0.1', // Replace with your Redis host
-        port: 6379,
+        host: process.env.REDIS_HOST_IP, // Replace with your Redis host
+        port: process.env.REDIS_PORT,
     }
 });
 redisClient.on('error', (err) => console.error('Redis Client Error:', err));

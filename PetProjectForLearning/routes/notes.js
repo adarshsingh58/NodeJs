@@ -36,5 +36,4 @@ db().then(() => {
         });
 });
 
-
 module.exports = router;

@@ -1,0 +1,34 @@
+# alertmanager.yml (example for Slack)
+global:
+  resolve_timeout: 1m
+  slack_api_url: 'https://hooks.slack.com/services/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' # Replace with your actual Slack webhook URL
+
+
+# --- ADD THIS ROUTE SECTION ---
+route:
+  # Default receiver if no specific routes match below
+  receiver: 'default-slack-receiver'
+  # How long to wait to buffer alerts of the same group before sending an initial notification.
+  group_wait: 10s # Adjust timings as needed
+  # How long to wait before sending a notification about new alerts that are added to a group
+  # of alerts for which an initial notification has already been sent.
+  group_interval: 1m
+  # How long to wait before re-sending a notification if the alert is still firing.
+  repeat_interval: 30m
+  # Group alerts primarily by alertname initially
+  group_by: ['alertname', 'job']
+
+  # Optional: Add specific routes here later if needed
+  # routes:
+  #   - receiver: 'some-other-receiver'
+  #     match:
+  #       severity: warning
+# --- END OF ROUTE SECTION ---
+
+receivers:
+  - name: 'default-slack-receiver'
+    slack_configs:
+      - channel: '#new-channel'
+        send_resolved: true
+        title: 'Alert Firing!'
+        text: '{{ len .Alerts }} alert(s) are firing.'

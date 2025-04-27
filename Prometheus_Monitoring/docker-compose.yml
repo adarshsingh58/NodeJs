@@ -3,19 +3,39 @@ services:
   prometheus:
     image: prom/prometheus
     ports:
-      - 9090:9090
+      - 9090:9090 # access Prometheus at http://docker.for.mac.localhost:9090/alerts
     volumes:
       - ./prometheus_data:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./rules.yml:/etc/prometheus/rules.yml # Mount rules file if you have one
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     networks:
       - localprom
+    depends_on: # Prometheus depends on alertmanager being available to send alerts
+      - alertmanager
+      # Add restart policy if desired
+      # restart: unless-stopped
+
+  alertmanager: # <-- New Alertmanager Service
+    image: prom/alertmanager
+    ports:
+      - "9093:9093" # Map host port 9093 to container port 9093. Access AlertManager at http://docker.for.mac.localhost:9093/#/alerts
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml # Mount config file
+      - ./alertmanager_data:/alertmanager # Mount data volume for persistence
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--storage.path=/alertmanager" # Explicitly set storage path
+    networks:
+      - localprom
+    # Add restart policy if desired
+    # restart: unless-stopped
 
   grafana:
     image: grafana/grafana
     ports:
-      - 3000:3000
+      - 3001:3000 # Access Grafana at http://docker.for.mac.localhost:3001/
     volumes:
       - ./grafana_data:/var/lib/grafana
     networks:
@@ -23,23 +43,6 @@ services:
     depends_on:
       - prometheus
 
-  redis:
-    image: redis:latest # Use the latest official Redis image (or specify a version like redis:7)
-    container_name: my-redis-instance # Optional: A specific name for your container
-    hostname: redis # Optional: Set a hostname for the container
-    restart: unless-stopped # Restart policy: restarts unless manually stopped
-    ports:
-      - "6379:6379" # Map port 6379 on your Mac to port 6379 inside the container
-    volumes:
-      - redis-data:/data # Mount a named volume 'redis-data' to /data inside the container for persistence
-
-volumes:
-    redis-data: # Define the named volume used by the redis service
-      driver: local # Specify the volume driver (usually 'local' on desktop)
-
 networks:
   localprom:
     driver: bridge
-
-# docker-compose up -d (Start services)
-# docker-compose down (Down services)

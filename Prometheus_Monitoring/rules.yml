@@ -14,7 +14,7 @@ groups:
       # Alert if the Node.js app instance is down (Prometheus can't scrape it)
       - alert: NodeJsAppDown
         expr: up{job="petProjectForLearning_service"} == 0
-        for: 2m
+        for: 30s
         labels:
           severity: critical
         annotations:
