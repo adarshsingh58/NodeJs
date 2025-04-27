@@ -41,7 +41,7 @@ async function findUserById(googleId) {
 }
 
 // Function to find or create a user based on Google profile
-async function findOrCreateUser(profile, ***REMOVED***, ***REMOVED***) {
+async function findOrCreateUser(profile, accessToken, refreshToken) {
     try {
         const users = await readUsers();
         const googleId = profile.id;
@@ -54,11 +54,11 @@ async function findOrCreateUser(profile, ***REMOVED***, ***REMOVED***) {
             user.displayName = profile.displayName;
             user.email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : user.email; // Update email if available
             user.photo = profile.photos && profile.photos.length > 0 ? profile.photos[0].value : user.photo; // Update photo if available
-            user.***REMOVED*** = ***REMOVED***; // Always update access token
+            user.accessToken = accessToken; // Always update access token
             // IMPORTANT: Only update refresh token if a new one is provided
             // Google often only sends it on the first authorization
-            if (***REMOVED***) {
-                user.***REMOVED*** = ***REMOVED***;
+            if (refreshToken) {
+                user.refreshToken = refreshToken;
             }
             user.lastLogin = new Date().toISOString();
         } else {
@@ -69,8 +69,8 @@ async function findOrCreateUser(profile, ***REMOVED***, ***REMOVED***) {
                 displayName: profile.displayName,
                 email: profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null,
                 photo: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : null,
-                ***REMOVED***: ***REMOVED***, // Is it a good idea to store access token?
-                ***REMOVED***: ***REMOVED***, // Store the initial refresh token
+                accessToken: accessToken, // Is it a good idea to store access token?
+                refreshToken: refreshToken, // Store the initial refresh token
                 roles: ["StandardUser"],
                 username: profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null,
                 authSource: "GoogleOauth",

@@ -24,7 +24,7 @@ const testRouter = require("./routes/testrouter.js");
 const booksCatalogueRouter = require("./routes/booksCatalogueRouter");
 const registerRouter = require("./routes/registerRoute.js");
 const loginRouter = require("./routes/loginAuthRoute.js");
-const refreshRouter = require("./routes/***REMOVED***Route.js");
+const refreshRouter = require("./routes/refreshTokenRoute.js");
 const logoutRouter = require("./routes/logoutRoute.js");
 const audioRouter = require("./routes/audioRoute.js");
 
@@ -153,7 +153,7 @@ app.use(logDetails);// using logging in middleware
 app.use("/", testRouter);// Routing all / request to testRouter
 //Logging in, Registering and Refreshing Access Token must come before verifyJWT, because we dont have/need an access token here.
 app.use("/register", registerRouter);// Routing all /register to registerRouter. Registers a User.
-app.use("/login", loginRouter);// Routing all /login to loginRouter. First time logging this is called and ***REMOVED*** and ***REMOVED*** is generated and passed in response.
+app.use("/login", loginRouter);// Routing all /login to loginRouter. First time logging this is called and accessToken and refreshToken is generated and passed in response.
 app.use("/refresh", refreshRouter);// Routing all /refresh to refreshRouter. This is called when a new access token is needed with a valid refresh token
 app.use("/oAuth", googleOauthRouter);// This Google Oauth Router should be before JWT one, else for oauth as well, we need  JWT access token which is not ideal. Also make sure the callBackUrl in GoogleCloud and in code is same
 
@@ -164,8 +164,8 @@ app.use(verifyJWT);// JWT access token verification
 //                                               --- PROTECTED ROUTES (JWT Required) --- These routes will only be accessible if jwtAuthenticateUser calls next() successfully
 
 app.use("/notes", notesRouter);// Routing all /notes request to notesRouter
-app.use("/books", booksCatalogueRouter);// Routing all /employees to empRouter. This call must be accessed only if jwt ***REMOVED*** is valid
-app.use("/logout", logoutRouter);// Routing all /logout to logoutRouter. This call must be accessed only if jwt ***REMOVED*** is valid
+app.use("/books", booksCatalogueRouter);// Routing all /employees to empRouter. This call must be accessed only if jwt accessToken is valid
+app.use("/logout", logoutRouter);// Routing all /logout to logoutRouter. This call must be accessed only if jwt accessToken is valid
 app.use('/audio', audioRouter);// using this route before rate limiting and auth. That way anyone can access  audio get
 
 //                                               --- Start Server ---

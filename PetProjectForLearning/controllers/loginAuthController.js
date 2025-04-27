@@ -22,22 +22,22 @@ const authenticateUser = async (req, res) => {
     if (match) {
         console.log(`Credentials for user: ${username} matched successfully`);
         //If login details are matching the User then we can proceed with creating JWT Access and Refresh Tokens
-        const ***REMOVED*** = jwt.sign(
+        const accessToken = jwt.sign(
             {"username": foundUser.username, "roles": foundUser.roles},// This is the main payload or Claim of the Token
             process.env.ACCESS_TOKEN_SECRET,// This is the access token secret key. Right now it is hardcoded in env file, but in prod we generate it on the fly
             {expiresIn: '180s'}//This has optional details like ttl
         );
         //All 3 components above makes a JWT, Json Web Token. The access Token we get is encrypted string with 2 dots, separating claim/payload, accessSecret and optionalDetails
-        console.log(`Access Token for user ${username} is generated: ${***REMOVED***}`);
-        const ***REMOVED*** = jwt.sign(
+        console.log(`Access Token for user ${username} is generated: ${accessToken}`);
+        const refreshToken = jwt.sign(
             {"username": foundUser.username},
             process.env.REFRESH_TOKEN_SECRET,
             {expiresIn: '10s'}
         );
-        console.log(`Refresh Token for user ${username} is generated: ${***REMOVED***}`);
+        console.log(`Refresh Token for user ${username} is generated: ${refreshToken}`);
 
 
-        foundUser.***REMOVED*** = ***REMOVED***;
+        foundUser.refreshToken = refreshToken;
 
         const otherUserList = userDB.user.filter(user => {
             console.log(user);
@@ -49,8 +49,8 @@ const authenticateUser = async (req, res) => {
             path.join(__dirname, '..', 'models', 'users.json'), JSON.stringify(userDB.user)
         );
 
-        res.cookie('jwt', ***REMOVED***, {httpOnly: true, maxAge: 24 * 60 * 60 * 1000}); // we set ***REMOVED*** in httpOnly Cookie to avoid CSRF and XSS attach since httpOnly True doesnt allow JS to access the data
-        res.json({***REMOVED***});// Access tokens are simply added in response and are short lived in-memory tokens
+        res.cookie('jwt', refreshToken, {httpOnly: true, maxAge: 24 * 60 * 60 * 1000}); // we set refreshToken in httpOnly Cookie to avoid CSRF and XSS attach since httpOnly True doesnt allow JS to access the data
+        res.json({accessToken});// Access tokens are simply added in response and are short lived in-memory tokens
 
 
     } else
