@@ -1,0 +1,2 @@
+The content of public folder, when defined as static load, will be cached at 
+browser. If you run this app and check the networks tab, you will see that favicon icon and index.html are coming from cache, after 1st call.

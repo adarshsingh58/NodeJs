@@ -1,0 +1,14 @@
+[
+  {
+      "RoleName": "Editor",
+      "RoleDesc": "Can Edit"
+  },
+  {
+      "RoleName": "StandardUser",
+      "RoleDesc": "Only Read"
+  },
+  {
+      "RoleName": "Admin",
+      "RoleDesc": "Full privileges"
+  }
+]
