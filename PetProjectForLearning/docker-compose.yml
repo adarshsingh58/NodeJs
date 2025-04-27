@@ -1,0 +1,45 @@
+version: "3"
+services:
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    networks:
+      - localprom
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana_data:/var/lib/grafana
+    networks:
+      - localprom
+    depends_on:
+      - prometheus
+
+  redis:
+    image: redis:latest # Use the latest official Redis image (or specify a version like redis:7)
+    container_name: my-redis-instance # Optional: A specific name for your container
+    hostname: redis # Optional: Set a hostname for the container
+    restart: unless-stopped # Restart policy: restarts unless manually stopped
+    ports:
+      - "6379:6379" # Map port 6379 on your Mac to port 6379 inside the container
+    volumes:
+      - redis-data:/data # Mount a named volume 'redis-data' to /data inside the container for persistence
+
+volumes:
+    redis-data: # Define the named volume used by the redis service
+      driver: local # Specify the volume driver (usually 'local' on desktop)
+
+networks:
+  localprom:
+    driver: bridge
+
+# docker-compose up -d (Start services)
+# docker-compose down (Down services)

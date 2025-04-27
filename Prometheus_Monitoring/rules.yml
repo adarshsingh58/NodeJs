@@ -1,0 +1,42 @@
+# rules.yml
+groups:
+  - name: application_alerts
+    rules:
+      - alert: HighHttpRequestErrors
+        expr: rate(http_requests_total{status_code=~"5.."}[2m]) > 0.1 # Alert if rate of 5xx errors over 2 mins is > 0.1/sec
+        for: 1m # Alert must be true for 1 minute
+        labels:
+          severity: critical
+        annotations:
+          summary: "High HTTP request errors on {{ $labels.job }}"
+          description: "{{ $labels.job }} is experiencing a high rate of 5xx errors."
+
+      # Alert if the Node.js app instance is down (Prometheus can't scrape it)
+      - alert: NodeJsAppDown
+        expr: up{job="petProjectForLearning_service"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node.js application instance down ({{ $labels.instance }})"
+          description: "Prometheus failed to scrape {{ $labels.instance }} for 2 minutes."
+
+  - name: host_alerts # Requires node_exporter running on the host
+    rules:
+      - alert: HighCpuUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 85 # CPU Usage > 85%
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "{{ $labels.instance }} CPU usage is {{ $value | printf \"%.2f\" }}%."
+
+      - alert: LowMemoryAvailable
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10 # Available Memory < 10%
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low memory available on {{ $labels.instance }}"
+          description: "{{ $labels.instance }} has only {{ $value | printf \"%.2f\" }}% memory available."
